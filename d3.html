@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Grafico a barre con assi X e Y</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+    <svg width="500" height="300"></svg>
+    <script>
+        // Imposta le dimensioni del grafico
+        var larghezza = 1650;
+        var altezza = 900;
+        var margine = { sinistro: 150, destro: 10, superiore: 40, inferiore: 40 };
+        var larghezzaGrafico = larghezza - margine.sinistro - margine.destro;
+        var altezzaGrafico = altezza - margine.superiore - margine.inferiore;
+
+        // Crea l'elemento SVG e lo aggiunge al body del documento HTML
+        var svg = d3.select("svg")
+            .attr("width", larghezza)
+            .attr("height", altezza);
+
+        // Carica i dati dal file CSV
+        var dataCsv = d3.csv("Food_Production.csv");
+        dataCsv.then(function (dati) {
+            // d3.csv("Food_Production.csv", function(dati) {
+            console.log(dati.Food_product)
+
+            // Imposta la scala per l'asse X
+            var scalaX = d3.scaleBand()
+                .domain(dati.map(function (d) { return d.Food_product; }))
+                .range([margine.sinistro, larghezzaGrafico + margine.sinistro])
+                .padding(0.1);
+
+
+            // Converto i valori della colonna Freshwater_withdrawals_per_kilogram da stringhe a numeri
+            for (let i = 0; i < dati - length; i++) {
+                dati[i].Freshwater_withdrawals_per_kilogram = dati[i].Freshwater_withdrawals_per_kilogram * 1.0
+
+                console.log(dati[i]['Freshwater_withdrawals_per_kilogram'])
+            }
+            // Imposta la scala per l'asse Y
+            var scalaY = d3.scaleLinear()
+                // .domain([0, d3.max(dati, function (d) { return d.Freshwater_withdrawals_per_kilogram; })])
+                .domain([0, 6500])
+                .range([altezzaGrafico, 0]);
+
+            // Crea l'asse X
+            var asseX = d3.axisBottom(scalaX);
+
+            // Aggiungi l'asse X al grafico
+            svg.append("g")
+                .attr("transform", "translate(0," + (altezzaGrafico + margine.superiore) + ")")
+                .call(asseX);
+
+            svg.append("text")
+                .attr("y", altezzaGrafico + 60)
+                .attr("x", (larghezzaGrafico / 2) + 150)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Food product");
+
+
+
+            // Crea l'asse Y
+            var asseY = d3.axisLeft(scalaY);
+
+            // Aggiungi l'asse Y al grafico
+            svg.append("g")
+                .attr("transform", "translate(" + margine.sinistro + "," + margine.superiore + ")")
+                
+                .call(asseY);
+
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 80)
+                .attr("x", -280 - (margine.sinistro))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Freshwater withdrawals per kilogram (liters per kilogram)");
+
+
+
+            // Crea le barre del grafico
+            var barre = svg.selectAll(".barra")
+                .data(dati)
+                .enter()
+                .append("rect")
+                .attr("class", "barra")
+                .attr("x", function (d) { return scalaX(d.Food_product); })
+                .attr("y", function (d) { return scalaY(d.Freshwater_withdrawals_per_kilogram); })
+                .attr("width", scalaX.bandwidth())
+                .attr("height", function (d) { return altezzaGrafico - scalaY(d.Freshwater_withdrawals_per_kilogram); });
+
+        });
+    </script>
+</body>
+
+</html>
