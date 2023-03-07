@@ -3,17 +3,18 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Grafico a barre con assi X e Y</title>
+    <title>Plot utilizzo acqua potabile per ogni kilo di prodotto</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 
 <body>
+    <h2>Grafico utilizzo litri acqua potabile per chilogrammo di prodotto</h2>
     <svg width="500" height="300"></svg>
     <script>
         // Imposta le dimensioni del grafico
         var larghezza = 1650;
-        var altezza = 900;
-        var margine = { sinistro: 150, destro: 10, superiore: 40, inferiore: 40 };
+        var altezza = 800;
+        var margine = { sinistro: 150, destro: 10, superiore: 0, inferiore: 40 };
         var larghezzaGrafico = larghezza - margine.sinistro - margine.destro;
         var altezzaGrafico = altezza - margine.superiore - margine.inferiore;
 
@@ -44,7 +45,7 @@
             // Imposta la scala per l'asse Y
             var scalaY = d3.scaleLinear()
                 // .domain([0, d3.max(dati, function (d) { return d.Freshwater_withdrawals_per_kilogram; })])
-                .domain([0, 6500])
+                .domain([0, 6000])
                 .range([altezzaGrafico, 0]);
 
             // Crea l'asse X
@@ -56,7 +57,7 @@
                 .call(asseX);
 
             svg.append("text")
-                .attr("y", altezzaGrafico + 60)
+                .attr("y", altezzaGrafico + 20)
                 .attr("x", (larghezzaGrafico / 2) + 150)
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
@@ -70,7 +71,7 @@
             // Aggiungi l'asse Y al grafico
             svg.append("g")
                 .attr("transform", "translate(" + margine.sinistro + "," + margine.superiore + ")")
-                
+
                 .call(asseY);
 
             svg.append("text")
@@ -89,6 +90,7 @@
                 .enter()
                 .append("rect")
                 .attr("class", "barra")
+                .attr("fill", "green")
                 .attr("x", function (d) { return scalaX(d.Food_product); })
                 .attr("y", function (d) { return scalaY(d.Freshwater_withdrawals_per_kilogram); })
                 .attr("width", scalaX.bandwidth())
